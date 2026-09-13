@@ -4,11 +4,10 @@ import './App.css';
 function App() {
   const [students, setStudents] = useState([]);
   const [formData, setFormData] = useState({ studentId: '', name: '', email: '' });
+  const [editingId, setEditingId] = useState(null); // Trạng thái lưu ID của sinh viên đang sửa
   
-  // Địa chỉ Backend API của bạn (hoặc thay bằng URL Codespaces backend nếu chạy cloud phân tán)
-  const API_URL = '/api/students';
+  const API_URL = 'https://friendly-goggles-5vxjvg7r9vx26xv-5000.app.github.dev/api/students';
 
-  // Lấy danh sách sinh viên từ Backend (GET /api/students)
   const fetchStudents = async () => {
     try {
       const response = await fetch(API_URL);
@@ -23,33 +22,55 @@ function App() {
     fetchStudents();
   }, []);
 
-  // Xử lý thay đổi form input
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Gửi dữ liệu tạo sinh viên mới (POST /api/students)
+  // Xử lý Thêm mới hoặc Cập nhật
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      if (response.ok) {
-        setFormData({ studentId: '', name: '', email: '' });
-        fetchStudents(); // Tải lại danh sách
+      if (editingId) {
+        // Gửi request PUT khi đang ở chế độ sửa
+        const response = await fetch(`${API_URL}/${editingId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+        if (response.ok) {
+          setEditingId(null);
+          setFormData({ studentId: '', name: '', email: '' });
+          fetchStudents();
+        } else {
+          const errData = await response.json();
+          alert(`Lỗi: ${errData.error}`);
+        }
       } else {
-        const errData = await response.json();
-        alert(`Lỗi: ${errData.error}`);
+        // Gửi request POST khi thêm mới
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+        if (response.ok) {
+          setFormData({ studentId: '', name: '', email: '' });
+          fetchStudents();
+        } else {
+          const errData = await response.json();
+          alert(`Lỗi: ${errData.error}`);
+        }
       }
     } catch (error) {
-      console.error('Lỗi khi thêm sinh viên:', error);
+      console.error('Lỗi khi lưu sinh viên:', error);
     }
   };
 
-  // Xử lý xóa sinh viên (DELETE /api/students/:id)
+  // Đưa dữ liệu sinh viên lên form để sửa
+  const handleEditClick = (student) => {
+    setEditingId(student._id);
+    setFormData({ studentId: student.studentId, name: student.name, email: student.email });
+  };
+
   const handleDelete = async (id) => {
     if (!confirm('Bạn có chắc muốn xóa sinh viên này không?')) return;
     try {
@@ -68,9 +89,8 @@ function App() {
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '800px', margin: '0 auto' }}>
       <h2>Ứng dụng Quản lý Sinh viên MERN</h2>
 
-      {/* Form thêm sinh viên */}
       <form onSubmit={handleSubmit} style={{ background: '#f4f4f4', padding: '15px', borderRadius: '5px', marginBottom: '20px' }}>
-        <h3>Thêm Sinh Viên Mới</h3>
+        <h3>{editingId ? 'Cập Nhật Sinh Viên' : 'Thêm Sinh Viên Mới'}</h3>
         <div style={{ marginBottom: '10px' }}>
           <input
             type="text"
@@ -104,12 +124,16 @@ function App() {
             style={{ padding: '8px', width: '100%', boxSizing: 'border-box' }}
           />
         </div>
-        <button type="submit" style={{ padding: '10px 15px', background: 'green', color: 'white', border: 'none', cursor: 'pointer' }}>
-          Thêm Sinh Viên
+        <button type="submit" style={{ padding: '10px 15px', background: editingId ? 'orange' : 'green', color: 'white', border: 'none', cursor: 'pointer', marginRight: '10px' }}>
+          {editingId ? 'Lưu Thay Đổi' : 'Thêm Sinh Viên'}
         </button>
+        {editingId && (
+          <button type="button" onClick={() => { setEditingId(null); setFormData({ studentId: '', name: '', email: '' }); }} style={{ padding: '10px 15px', background: 'gray', color: 'white', border: 'none', cursor: 'pointer' }}>
+            Hủy
+          </button>
+        )}
       </form>
 
-      {/* Danh sách sinh viên */}
       <h3>Danh sách sinh viên</h3>
       <table border="1" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
@@ -128,6 +152,9 @@ function App() {
                 <td>{student.name}</td>
                 <td>{student.email}</td>
                 <td>
+                  <button onClick={() => handleEditClick(student)} style={{ background: 'orange', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer', marginRight: '5px' }}>
+                    Sửa
+                  </button>
                   <button onClick={() => handleDelete(student._id)} style={{ background: 'red', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer' }}>
                     Xóa
                   </button>
