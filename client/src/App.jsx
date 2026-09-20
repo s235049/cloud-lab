@@ -6,8 +6,9 @@ function App() {
   const [formData, setFormData] = useState({ studentId: '', name: '', email: '' });
   const [editingId, setEditingId] = useState(null); // Trạng thái lưu ID của sinh viên đang sửa
   
-  const API_URL = 'https://friendly-goggles-5vxjvg7r9vx26xv-5000.app.github.dev/api/students';
-
+  //const API_URL = 'https://friendly-goggles-5vxjvg7r9vx26xv-5000.app.github.dev/api/students';
+    const API_URL = 'http://localhost:5000/api/students';
+    
   const fetchStudents = async () => {
     try {
       const response = await fetch(API_URL);

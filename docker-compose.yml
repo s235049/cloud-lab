@@ -1,0 +1,17 @@
+services:
+  backend:
+    build:
+      context: ./mern-demo
+      dockerfile: server/Dockerfile
+    container_name: mern-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URI=mongodb+srv://thuymy:235049@cluster0.m6wpozq.mongodb.net/cloud_lab?retryWrites=true&w=majority&appName=Cluster0
+
+  frontend:
+    build:
+      context: ./client
+    container_name: mern-frontend
+    ports:
+      - "3000:80"
