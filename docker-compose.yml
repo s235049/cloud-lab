@@ -11,7 +11,8 @@ services:
 
   frontend:
     build:
-      context: ./client
+      context: ./mern-demo/client
+      dockerfile: Dockerfile
     container_name: mern-frontend
     ports:
       - "3000:80"
