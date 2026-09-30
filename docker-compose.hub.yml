@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  backend:
+    image: thuymy/mern-backend:1.0
+    container_name: mern-backend-hub
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGODB_URI=mongodb+srv://thuymy:235049@cluster0.m6wpozq.mongodb.net/cloud_lab?retryWrites=true&w=majority&appName=Cluster0
+
+    restart: always
+
+  frontend:
+    image: thuymy/mern-frontend:1.0
+    container_name: mern-frontend-hub
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: always
