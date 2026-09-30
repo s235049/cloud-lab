@@ -88,7 +88,7 @@ function App() {
 
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '800px', margin: '0 auto' }}>
-      <h2>Ứng dụng Quản lý Sinh viên MERN</h2>
+      <h2>Quản Lý Sinh Viên v2.0</h2>
 
       <form onSubmit={handleSubmit} style={{ background: '#f4f4f4', padding: '15px', borderRadius: '5px', marginBottom: '20px' }}>
         <h3>{editingId ? 'Cập Nhật Sinh Viên' : 'Thêm Sinh Viên Mới'}</h3>

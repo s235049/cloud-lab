@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    image: thuymy/mern-backend:1.0
+    image: thuymy/mern-frontend:1.0
     container_name: mern-backend-hub
     ports:
       - "5000:5000"
@@ -13,7 +13,7 @@ services:
     restart: always
 
   frontend:
-    image: thuymy/mern-frontend:1.0
+    image: thuymy/mern-frontend:2.0
     container_name: mern-frontend-hub
     ports:
       - "3000:80"
